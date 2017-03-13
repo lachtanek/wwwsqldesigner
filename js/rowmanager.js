@@ -7,11 +7,15 @@ SQL.RowManager = function(owner) {
 	this.connecting = false;
 	
 	var ids = ["editrow","removerow","uprow","downrow","foreigncreate","foreignconnect","foreigndisconnect"];
+	var hotkeys = {removerow: "delete", uprow: "up arrow", downrow: "down arrow", foreigncreate: "f", foreignconnect: "c", foreigndisconnect: "d"};
 	for (var i=0;i<ids.length;i++) {
 		var id = ids[i];
 		var elm = OZ.$(id);
 		this.dom[id] = elm;
 		elm.value = _(id);
+
+		if (id in hotkeys)
+			elm.title = _(id) + ' (' + hotkeys[id] + ')';
 	}
 
 	this.select(false);
@@ -164,20 +168,32 @@ SQL.RowManager.prototype.press = function(e) {
 	if (target == "textarea" || target == "input") { return; } /* not when in form field */
 	
 	switch (e.keyCode) {
-		case 38:
+		case 38: // arrowup
 			this.up();
 			OZ.Event.prevent(e);
 		break;
-		case 40:
+		case 40: // arrowdown
 			this.down();
 			OZ.Event.prevent(e);
 		break;
-		case 46:
+		case 46: // delete
 			this.remove();
 			OZ.Event.prevent(e);
 		break;
-		case 13:
-		case 27:
+		case 67: // c
+			this.foreignconnect();
+			OZ.Event.prevent(e);
+		break;
+		case 68: // d
+			this.foreigndisconnect();
+			OZ.Event.prevent(e);
+		break;
+		case 70: // f
+			this.foreigncreate();
+			OZ.Event.prevent(e);
+		break;
+		case 13: // enter
+		case 27: // esc
 			this.selected.collapse();
 		break;
 	}

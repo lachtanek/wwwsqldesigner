@@ -11,11 +11,15 @@ SQL.TableManager = function(owner) {
 	this.adding = false;
 	
 	var ids = ["addtable","removetable","aligntables","cleartables","addrow","edittable","tablekeys"];
+	var hotkeys = {addrow: "+", removetable: "delete"};
 	for (var i=0;i<ids.length;i++) {
 		var id = ids[i];
 		var elm = OZ.$(id);
 		this.dom[id] = elm;
 		elm.value = _(id);
+
+		if (id in hotkeys)
+			elm.title = _(id) + ' (' + hotkeys[id] + ')';
 	}
 
 	var ids = ["tablenamelabel","tablecommentlabel"];
@@ -201,8 +205,13 @@ SQL.TableManager.prototype.press = function(e) {
 	if (!this.selection.length) { return; } /* nothing if selection is active */
 
 	switch (e.keyCode) {
-		case 46:
+		case 46: // delete
 			this.remove();
+			OZ.Event.prevent(e);
+		break;
+		case 107: // + (numpad)
+		case 49: // 1
+			this.addRow();
 			OZ.Event.prevent(e);
 		break;
 	}
